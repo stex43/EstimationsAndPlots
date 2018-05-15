@@ -4,9 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EstimationsAndPlots"
+        xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="MainWindow" Height="542" Width="898">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Grid Margin="0,0,315,162">
+        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="0,0,10,0" />
+        <Grid Margin="579,10,-311,0">
+            <ComboBox Name="FunctionChoice" HorizontalAlignment="Left" Height="25" Margin="147,10,0,0" VerticalAlignment="Top" Width="150" SelectionChanged="FunctionChoice_SelectionChanged"/>
+            <TextBlock HorizontalAlignment="Left" Height="45" Margin="0,3,0,0" TextWrapping="Wrap" Text="Аппроксимирующая функция" TextAlignment="Center" VerticalAlignment="Top" Width="150"/>
+        </Grid>
+        <Button Content="Button" HorizontalAlignment="Left" Height="0" Margin="464,423,0,-74" VerticalAlignment="Top" Width="3"/>
     </Grid>
 </Window>

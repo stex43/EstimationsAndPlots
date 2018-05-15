@@ -3,6 +3,6 @@
     interface IDistance
     {
         // добавить точки в контрукторе
-        double Distance(IFunction function);
+        double Distance(Function function);
     }
 }

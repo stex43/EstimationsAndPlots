@@ -6,45 +6,28 @@ using System.Threading.Tasks;
 
 namespace EstimationsAndPlots
 {
-    class LinearFunction : IFunction
+    class LinearFunction : Function
     {
-        public LinearFunction()
+        public LinearFunction() : this(new double[] { 1, 0 })
         {
-            Parameters = new double[] { 1, 0 };
+
         }
 
         public LinearFunction(double[] initialParameters)
         {
-            Parameters = initialParameters;
-        }
-
-        private double a, b;
-
-        public int NumberOfParameters => 2;
-
-        public double[] Parameters
-        {
-            get => Parameters;
-            set
+            Parameters = new Dictionary<string, double>
             {
-                if (value.Count() == NumberOfParameters)
-                {
-                    a = value[0];
-                    b = value[1];
-                }
-            }
+                { "a", initialParameters[0] },
+                { "b", initialParameters[1] },
+            };
         }
 
-        public double ParameterA { get => a; set => a = value; }
-
-        public double ParameterB { get => b; set => b = value; }
-
-        public double FunctionValue(double x)
+        public override double FunctionValue(double x)
         {
-            return a * x + b;
+            return Parameters["a"] * x + Parameters["b"];
         }
 
-        public double[] FunctionValue(double[] x)
+        public override double[] FunctionValue(double[] x)
         {
             int n = x.Count();
             double[] results = new double[n];

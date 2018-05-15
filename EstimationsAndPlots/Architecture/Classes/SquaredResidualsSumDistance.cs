@@ -22,7 +22,7 @@ namespace EstimationsAndPlots
             }
         }
 
-        public double Distance(IFunction function)
+        public double Distance(Function function)
         {
             double distance = 0;
 

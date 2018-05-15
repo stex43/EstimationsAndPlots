@@ -2,6 +2,6 @@
 {
     interface IMinimize
     {
-        double[] Minimize(IFunction function, IDistance distance);
+        double[] Minimize(Function function, IDistance distance);
     }
 }
