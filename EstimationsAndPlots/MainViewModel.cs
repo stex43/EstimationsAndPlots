@@ -15,8 +15,8 @@ namespace EstimationsAndPlots
         {
             MyModel = new PlotModel();
 
-            MyModel.Axes.Add(new LinearAxis { MajorStep = 1, Position = AxisPosition.Bottom, Minimum = -5, Maximum = 5, MajorGridlineStyle = LineStyle.Solid });
-            MyModel.Axes.Add(new LinearAxis { MajorStep = 1, Position = AxisPosition.Left, MajorGridlineStyle = LineStyle.Solid });
+            MyModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = -5, Maximum = 5, MajorGridlineStyle = LineStyle.Solid });
+            MyModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, MajorGridlineStyle = LineStyle.Solid });
             
             var axe = new LineSeries();
             axe.Points.Add(new DataPoint(MyModel.Axes[0].Minimum, 0));

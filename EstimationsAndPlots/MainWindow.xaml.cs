@@ -50,8 +50,6 @@ namespace EstimationsAndPlots
 
             Plot.Controller = myController;
 
-            myController.UnbindAll();
-
             myController.BindKeyDown(OxyKey.Right, OxyPlot.PlotCommands.PanLeft);
             myController.BindKeyDown(OxyKey.Left, OxyPlot.PlotCommands.PanRight);
             myController.BindKeyDown(OxyKey.Up, OxyPlot.PlotCommands.PanDown);
@@ -132,18 +130,6 @@ namespace EstimationsAndPlots
         private void Save_Click(object sender, RoutedEventArgs e)
         {
 
-        }
-
-        private void Plot_MouseWheel(object sender, MouseWheelEventArgs e)
-        {            
-            if (e.Delta < 0)
-            {
-                Plot.ZoomAllAxes(0.8);
-            }
-            else if (e.Delta > 0)
-            {
-                Plot.ZoomAllAxes(1.2);
-            }
         }
     }
 }
