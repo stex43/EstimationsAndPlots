@@ -1,4 +1,5 @@
 ﻿using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,17 @@ namespace EstimationsAndPlots
     {
         public MainViewModel()
         {
-            this.MyModel = new PlotModel();
-            this.MyModel.Series.Add(new FunctionSeries(Math.Cos, 0, 10, 0.1, "cos(x)"));
+            MyModel = new PlotModel();
+
+            MyModel.Axes.Add(new LinearAxis { MajorStep = 1, Position = AxisPosition.Bottom, Minimum = -5, Maximum = 5, MajorGridlineStyle = LineStyle.Solid });
+            MyModel.Axes.Add(new LinearAxis { MajorStep = 1, Position = AxisPosition.Left, MajorGridlineStyle = LineStyle.Solid });
+            
+            var axe = new LineSeries();
+            axe.Points.Add(new DataPoint(MyModel.Axes[0].Minimum, 0));
+            axe.Points.Add(new DataPoint(MyModel.Axes[0].Maximum, 0));
+            MyModel.Series.Add(axe);
+
+            MyModel.PlotType = PlotType.Cartesian;            
         }
 
         public PlotModel MyModel { get; private set; }
