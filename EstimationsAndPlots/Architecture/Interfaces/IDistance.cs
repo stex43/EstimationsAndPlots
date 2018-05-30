@@ -1,6 +1,6 @@
 ﻿namespace EstimationsAndPlots
 {
-    interface IDistance
+    public interface IDistance
     {
         // добавить точки в контрукторе
         double Distance(Function function);

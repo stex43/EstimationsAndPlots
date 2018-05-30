@@ -6,21 +6,17 @@ using System.Threading.Tasks;
 
 namespace EstimationsAndPlots
 {
-    class SquaredResidualsSumDistance : IDistance
+    public class SquaredResidualsSumDistance : IDistance
     {
         public SquaredResidualsSumDistance(Point[] data)
         {
-            Data = data;
+            this.data = new Point[data.Count()];
+            data.CopyTo(this.data, 0);
         }
 
-        public Point[] Data
-        {
-            get => Data;
-            set
-            {
-                value.CopyTo(Data, 0);
-            }
-        }
+        private Point[] data;
+        
+        public Point[] Data { get => data; set => data = value; }
 
         public double Distance(Function function)
         {

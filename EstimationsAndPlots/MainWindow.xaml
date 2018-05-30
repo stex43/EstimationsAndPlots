@@ -11,12 +11,19 @@
         <local:MainViewModel/>
     </Window.DataContext>
     <Grid Margin="0,0,315,162">
-        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="0,0,10,0"/>
-        <Grid Margin="579,10,-311,0">
+        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="0,0,10,0" MouseWheel="Plot_MouseWheel"/>
+        <Grid Margin="565,10,-297,0">
             <ComboBox Name="FunctionChoice" HorizontalAlignment="Left" Height="25" Margin="147,10,0,0" VerticalAlignment="Top" Width="150" SelectionChanged="FunctionChoice_SelectionChanged"/>
             <TextBlock HorizontalAlignment="Left" Height="45" Margin="0,3,0,0" TextWrapping="Wrap" Text="Аппроксимирующая функция" TextAlignment="Center" VerticalAlignment="Top" Width="150"/>
             <Button Name="Open" Content="Загрузить данные" HorizontalAlignment="Left" Margin="68,104,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="Open_Click"/>
-            <Button Name="Save" Content="Сохранить данные" HorizontalAlignment="Left" Margin="68,140,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="Save_Click"/>
+            <Button Name="Save" Content="Сохранить данные" HorizontalAlignment="Left" Margin="68,134,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="Save_Click"/>
+            <TextBox Name="P1" HorizontalAlignment="Left" Height="18" Margin="68,244,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center"  Visibility="Hidden" LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
+            <TextBox Name="P2" HorizontalAlignment="Left" Height="18" Margin="68,267,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center"  Visibility="Hidden" LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
+            <TextBox Name="P3" HorizontalAlignment="Left" Height="18" Margin="68,290,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" Visibility="Hidden" LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
+            <TextBlock Name="T1" HorizontalAlignment="Left" Height="18" Margin="10,244,0,0" VerticalAlignment="Top" Width="52" TextAlignment="Right"/>
+            <TextBlock Name="T2" HorizontalAlignment="Left" Height="18" Margin="10,267,0,0" VerticalAlignment="Top" Width="52" TextAlignment="Right"/>
+            <TextBlock Name="T3" HorizontalAlignment="Left" Height="18" Margin="10,290,0,0" VerticalAlignment="Top" Width="52" TextAlignment="Right"/>
+            <Button x:Name="Optimize" Content="Оптимизировать" HorizontalAlignment="Left" Margin="68,170,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="Optimize_Click"/>
         </Grid>
     </Grid>
 </Window>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EstimationsAndPlots
 {
-    class LinearFunction : Function
+    public class LinearFunction : Function
     {
         public LinearFunction() : this(new double[] { 1, 0 })
         {
