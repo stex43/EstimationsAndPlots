@@ -28,6 +28,10 @@ namespace EstimationsAndPlots
         private List<Point> operatingDataSet = new List<Point>();
         private List<TextBox> parametersTextBoxes = new List<TextBox>();
         private List<TextBlock> parametersTextBlocks = new List<TextBlock>();
+        private int maxiter;
+        private double eps;
+        private int optimizationStepsCount = 10;
+        private List<double[]> parametersFunctions = new List<double[]>();
 
         private Dictionary<string, Function> functions = new Dictionary<string, Function>()
         {
@@ -72,8 +76,9 @@ namespace EstimationsAndPlots
         private void FunctionChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             operatingFunction = functions[(string)FunctionChoice.SelectedValue];
+            parametersFunctions.Add(operatingFunction.GetParametersValues());
 
-            DrawFunction("");
+            DrawFunctions();
 
             int i = 0;
             foreach (var parameter in operatingFunction.GetParameters())
@@ -86,89 +91,16 @@ namespace EstimationsAndPlots
 
                 i++;
             }
-        }
 
-        private void Open_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                FileName = "Data", 
-                DefaultExt = ".txt", 
-                Filter = "Текстовые документы (.txt)|*.txt" 
-            };
-            
-            bool? result = openDialog.ShowDialog();
-            
-            if (result == true)
-            {
-                string filename = openDialog.FileName;
-                StreamReader readingFileStream = new StreamReader(filename);
-                var listStringPoints = readingFileStream.ReadToEnd().Split('\n');
+            MaxiterName.Visibility = Visibility.Visible;
+            Maxiter.Visibility = Visibility.Visible;
+            EpsName.Visibility = Visibility.Visible;
+            Eps.Visibility = Visibility.Visible;
 
-                for (int i = 0; i < listStringPoints.Count(); i++)
-                {
-                    var stringPoint = listStringPoints[i];
-                    var listXY = stringPoint.Replace("\r", string.Empty).Split();
+            Optimize.Visibility = Visibility.Visible;
 
-                    try
-                    {
-                        if (listXY.Count() != 2)
-                        {
-                            throw new IOException("Ошибка при чтении файла", i);
-                        }
-
-                        if (!double.TryParse(listXY[0], out double x))
-                        {
-                            throw new IOException("Ошибка при чтении файла", i);
-                        }
-
-                        if (!double.TryParse(listXY[1], out double y))
-                        {
-                            throw new IOException("Ошибка при чтении файла", i);
-                        }
-
-                        operatingDataSet.Add(new Point(x, y));
-                    }
-                    catch (IOException exception)
-                    {
-                        MessageBox.Show(string.Format("Ошибка в строке #{0}", i + 1), exception.Message, MessageBoxButton.OK);
-                        operatingDataSet.Clear();
-                        return;
-                    }
-                }
-
-                var scatterSeries = new OxyPlot.Series.ScatterSeries { MarkerType = MarkerType.Circle };
-                foreach (var point in operatingDataSet)
-                {
-                    scatterSeries.Points.Add(new ScatterPoint(point.X, point.Y, 3));
-                }
-
-                model.Series.Add(scatterSeries);
-                Plot.InvalidatePlot();
-            }
-        }
-
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveDialog = new SaveFileDialog
-            {
-                FileName = "Data",
-                DefaultExt = ".txt",
-                Filter = "Текстовые документы (.txt)|*.txt"
-            };
-
-            bool? result = saveDialog.ShowDialog();
-
-            if (result == true)
-            {
-                string filename = saveDialog.FileName;
-                StreamWriter writingFileStream = new StreamWriter(filename);
-
-                foreach (var point in operatingDataSet)
-                {
-                    writingFileStream.WriteLine(string.Format("{0} {1}", point.X, point.Y));
-                }
-            }
+            OptimizationOptionsUpdate(Maxiter, new RoutedEventArgs());
+            OptimizationOptionsUpdate(Eps, new RoutedEventArgs());
         }
 
         private void P_UpdateParameter(object sender, RoutedEventArgs e)
@@ -179,10 +111,11 @@ namespace EstimationsAndPlots
             var parameterValue = double.Parse(parametersTextBoxes[parameterIndex].Text.Replace(',', '.'), CultureInfo.InvariantCulture);
 
             operatingFunction.SetParameterValue(parameterName, parameterValue);
+            parametersFunctions[0] = operatingFunction.GetParametersValues();
 
             model.Series.Clear();
 
-            DrawFunction("");
+            DrawFunctions();
         }
 
         private void P_KeyDown(object sender, KeyEventArgs e)
@@ -196,41 +129,49 @@ namespace EstimationsAndPlots
         private void Optimize_Click(object sender, RoutedEventArgs e)
         {
             var optimizer = new NelderMeadMinimizer();
-            var distance = new SquaredResidualsSumDistance(operatingDataSet.ToArray());
-            var newParameters = optimizer.Minimize(operatingFunction, distance);
+            var distanceCount = new SquaredResidualsSumDistance(operatingDataSet.ToArray());
 
-            DrawFunction("optimized");
+            var distance = distanceCount.Distance(operatingFunction);
+
+            var distanceStep = (distance - eps) / optimizationStepsCount;
+
+            for (int i = 0; i < optimizationStepsCount; i++)
+            {
+                distance -= distanceStep;
+                var newParameters = optimizer.Minimize(operatingFunction, distanceCount, distance, maxiter);
+
+                double s = 0;
+                for (int j = 0; j < newParameters.Length; j++)
+                {
+                    s += Math.Pow(newParameters[j] - parametersFunctions[parametersFunctions.Count - 1][j], 2);
+                }
+                s /= newParameters.Length;
+                if (s > 0.01)
+                {
+                    parametersFunctions.Add(newParameters);
+                }
+            }
+           
+            DrawFunctions();
         }
 
-        private void DrawFunction(string legendName)
+        private void OptimizationOptionsUpdate(object sender, RoutedEventArgs e)
         {
-            var xMin = model.DefaultXAxis.ActualMinimum;
-            var xMax = model.DefaultXAxis.ActualMaximum;
-
-            if (legendName == "")
+            if ((TextBox)sender == Maxiter)
             {
-                model.Series.Add(new FunctionSeries(operatingFunction.FunctionValue, xMin, xMax, (xMax - xMin) / 1000));
-
+                maxiter = int.Parse(Maxiter.Text);
             }
-            else
+            else if ((TextBox)sender == Eps)
             {
-                model.Series.Add(new FunctionSeries(operatingFunction.FunctionValue, xMin, xMax, (xMax - xMin) / 1000, legendName));
+                eps = double.Parse(Eps.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
             }
-
-            Plot.InvalidatePlot();
         }
 
-        private void Plot_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void OptimizationOptions_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Delta > 0)
+            if (e.Key == Key.Enter)
             {
-                Plot.ZoomAllAxes(1.2);
-                DrawFunction("");
-            }
-            else if (e.Delta < 0)
-            {
-                Plot.ZoomAllAxes(0.85);
-                DrawFunction("");
+                OptimizationOptionsUpdate(sender, new RoutedEventArgs());
             }
         }
     }

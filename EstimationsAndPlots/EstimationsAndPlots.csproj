@@ -77,13 +77,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Architecture\Classes\LinearFunction.cs" />
-    <Compile Include="Architecture\Classes\NelderMeadMinimizer.cs" />
-    <Compile Include="Architecture\Classes\SquaredResidualsSumDistance.cs" />
-    <Compile Include="Architecture\Interfaces\IDistance.cs" />
-    <Compile Include="Architecture\Interfaces\Function.cs" />
-    <Compile Include="Architecture\Interfaces\IMinimize.cs" />
-    <Compile Include="Architecture\Point.cs" />
+    <Compile Include="MainWindow.xaml.Actions\MainWindow.xaml.PlotActions.cs" />
+    <Compile Include="Math\Classes\LinearFunction.cs" />
+    <Compile Include="Math\Classes\NelderMeadMinimizer.cs" />
+    <Compile Include="Math\Classes\SquaredResidualsSumDistance.cs" />
+    <Compile Include="Math\Interfaces\IDistance.cs" />
+    <Compile Include="Math\Interfaces\Function.cs" />
+    <Compile Include="Math\Interfaces\IMinimize.cs" />
+    <Compile Include="Math\Point.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -91,6 +92,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainWindow.xaml.Actions\MainWindow.xaml.Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
