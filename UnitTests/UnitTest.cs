@@ -19,7 +19,7 @@ namespace UnitTests
             SquaredResidualsSumDistance distance = new SquaredResidualsSumDistance(data.ToArray());
 
             var minimizer = new NelderMeadMinimizer();
-            var res = minimizer.Minimize(function, distance);
+            var res = minimizer.Minimize(function, distance, 0.01, 100);
 
             function.SetParametersValues(res);
 

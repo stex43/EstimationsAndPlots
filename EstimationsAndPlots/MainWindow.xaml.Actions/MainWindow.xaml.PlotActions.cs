@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Wpf;
 using System;
@@ -73,6 +74,34 @@ namespace EstimationsAndPlots
                 Plot.ZoomAllAxes(0.85);
                 DrawFunctions();
             }
+        }
+
+        private void Plot_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var loc = e.GetPosition(this);
+            var args = new OxyMouseDownEventArgs();
+            args.Position = new ScreenPoint(loc.X, loc.Y);
+
+            this.Plot_MouseDown(sender, args);
+        }
+
+        private void Plot_MouseDown(object sender, OxyMouseDownEventArgs e)
+        {
+            var plot = model as PlotModel;
+            var axisList = plot.Axes.ToList();
+
+            OxyPlot.Axes.Axis x = null, y = null;
+            foreach (var ax in axisList)
+            {
+                if (ax.Position == AxisPosition.Bottom)
+                    x = ax;
+                else if (ax.Position == AxisPosition.Left)
+                    y = ax;
+            }
+
+            var point = OxyPlot.Axes.Axis.InverseTransform(e.Position, x, y);
+
+            this.operatingDataSet.Add(new Point(point.X, point.Y));
         }
     }
 }
