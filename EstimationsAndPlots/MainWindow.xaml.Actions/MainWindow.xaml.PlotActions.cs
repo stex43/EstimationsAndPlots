@@ -18,9 +18,6 @@ using System.Windows.Input;
 
 namespace EstimationsAndPlots
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {        
         private void DrawFunctions()
@@ -28,17 +25,32 @@ namespace EstimationsAndPlots
             model.Series.Clear();
 
             var xMin = model.DefaultXAxis.ActualMinimum;
-            var xMax = model.DefaultXAxis.ActualMaximum;                     
+            var xMax = model.DefaultXAxis.ActualMaximum;    
 
-            foreach (var parametersFunction in parametersFunctions)
+            for (int i = 0; i < parametersFunctions.Count; i++)
             {
-                operatingFunction.SetParametersValues(parametersFunction);
-                model.Series.Add(new FunctionSeries(operatingFunction.FunctionValue, xMin, xMax, (xMax - xMin) / 1000));
+                operatingFunction.SetParametersValues(parametersFunctions[i]);
+                var series = new FunctionSeries(operatingFunction.FunctionValue, xMin, xMax, (xMax - xMin) / 1000);
+                if (i == 0)
+                {
+                    series.Color = OxyColors.Blue;
+                }
+                else if (i == parametersFunctions.Count - 1)
+                {
+                    series.Color = OxyColors.Red;
+                    series.Title = "результат";
+                }
+                else
+                {
+                    series.LineStyle = LineStyle.Dash;
+                }
+                model.Series.Add(series);
             }
 
             if (operatingDataSet.Count != 0)
             {
-                var scatterSeries = new OxyPlot.Series.ScatterSeries { MarkerType = MarkerType.Circle };
+                var scatterSeries = new OxyPlot.Series.ScatterSeries { MarkerType = MarkerType.Circle,
+                    MarkerFill = OxyColors.DarkCyan };
                 foreach (var point in operatingDataSet)
                 {
                     scatterSeries.Points.Add(new ScatterPoint(point.X, point.Y, 3));

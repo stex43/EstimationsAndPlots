@@ -39,6 +39,7 @@ namespace EstimationsAndPlots
                 string filename = openDialog.FileName;
                 StreamReader readingFileStream = new StreamReader(filename);
                 var listStringPoints = readingFileStream.ReadToEnd().Split('\n');
+                operatingDataSet.Clear();
 
                 for (int i = 0; i < listStringPoints.Count(); i++)
                 {
@@ -80,26 +81,37 @@ namespace EstimationsAndPlots
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveDialog = new SaveFileDialog
+            try
             {
-                FileName = "Data",
-                DefaultExt = ".txt",
-                Filter = "Текстовые документы (.txt)|*.txt"
-            };
-
-            bool? result = saveDialog.ShowDialog();
-
-            if (result == true)
-            {
-                string filename = saveDialog.FileName;
-                StreamWriter writingFileStream = new StreamWriter(filename);
-
-                foreach (var point in operatingDataSet)
+                if (operatingDataSet.Count == 0)
                 {
-                    writingFileStream.WriteLine(string.Format("{0} {1}", point.X, point.Y));
+                    throw new NullReferenceException();
                 }
+                SaveFileDialog saveDialog = new SaveFileDialog
+                {
+                    FileName = "Data",
+                    DefaultExt = ".txt",
+                    Filter = "Текстовые документы (.txt)|*.txt"
+                };
 
-                writingFileStream.Close();
+                bool? result = saveDialog.ShowDialog();
+
+                if (result == true)
+                {
+                    string filename = saveDialog.FileName;
+                    StreamWriter writingFileStream = new StreamWriter(filename);
+
+                    foreach (var point in operatingDataSet)
+                    {
+                        writingFileStream.WriteLine(string.Format("{0} {1}", point.X, point.Y));
+                    }
+
+                    writingFileStream.Close();
+                }
+            }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show("Нет данных для сохранения", "", MessageBoxButton.OK);
             }
         }
 
