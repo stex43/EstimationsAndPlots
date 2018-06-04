@@ -21,7 +21,7 @@
                 <MenuItem Header="Выход" Click="Exit_Click"/>
             </MenuItem>
         </Menu>
-        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="10,25,350,152" MouseWheel="Plot_MouseWheel"/>
+        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="10,25,350,152" MouseWheel="Plot_MouseWheel" oxy:MouseDown= "Plot_MouseDown"/>
         <TabControl Height="486" Margin="570,25,0,0" Width="335" 
                     TabStripPlacement="Bottom">
             <TabItem Header="Данные">
