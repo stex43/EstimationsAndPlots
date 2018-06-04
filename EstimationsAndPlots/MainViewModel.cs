@@ -18,7 +18,7 @@ namespace EstimationsAndPlots
             MyModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = -5, Maximum = 5, MajorGridlineStyle = LineStyle.Solid });
             MyModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, MajorGridlineStyle = LineStyle.Solid });
 
-            MyModel.PlotType = PlotType.Cartesian;            
+            MyModel.PlotType = PlotType.Cartesian;
         }
 
         public PlotModel MyModel { get; private set; }
