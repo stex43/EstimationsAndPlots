@@ -127,14 +127,30 @@ namespace EstimationsAndPlots
         private void P_UpdateParameter(object sender, RoutedEventArgs e)
         {
             var parameterIndex = parametersTextBoxes.IndexOf((TextBox)sender);
-
             var parameterName = parametersTextBlocks[parameterIndex].Text;
-            var parameterValue = double.Parse(parametersTextBoxes[parameterIndex].Text.Replace(',', '.'), CultureInfo.InvariantCulture);
 
-            operatingFunction.SetParameterValue(parameterName, parameterValue);
-            parametersFunctions[0] = operatingFunction.GetParametersValues();           
+            if (parametersFunctions.Count > 1)
+            {
+                var res = MessageBox.Show("Это действие удалит полученные результаты. Продолжить?", "",
+                    MessageBoxButton.YesNo);
+                
+                if (res == MessageBoxResult.Yes)
+                {
+                    var parameterValue = double.Parse(parametersTextBoxes[parameterIndex].Text.Replace(',', '.'), CultureInfo.InvariantCulture);
 
-            DrawFunctions();
+                    parametersFunctions.Clear();
+
+                    operatingFunction.SetParameterValue(parameterName, parameterValue);
+                    parametersFunctions.Add(operatingFunction.GetParametersValues());
+
+                    DrawFunctions();
+                }
+                else
+                {
+                    parametersTextBoxes[parameterIndex].Text = 
+                        parametersFunctions[parametersFunctions.Count - 1][parameterIndex].ToString(CultureInfo.InvariantCulture);
+                }
+            }
         }
 
         private void P_KeyDown(object sender, KeyEventArgs e)
@@ -265,6 +281,16 @@ namespace EstimationsAndPlots
 
         private void PointsTable_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
+            if (parametersFunctions.Count > 1)
+            {
+                var res = MessageBox.Show("Это действие удалит полученные результаты. Продолжить?", "",
+                    MessageBoxButton.YesNo);
+
+                if (res == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
             DrawFunctions();
         }
     }

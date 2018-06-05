@@ -24,7 +24,18 @@ namespace EstimationsAndPlots
     public partial class MainWindow : Window
     {
         private void Open_Click(object sender, RoutedEventArgs e)
-        {
+        { 
+            if (parametersFunctions.Count > 1)
+            {
+                var res = MessageBox.Show("Это действие удалит полученные результаты. Продолжить?", "",
+                    MessageBoxButton.YesNo);
+
+                if (res == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             OpenFileDialog openDialog = new OpenFileDialog
             {
                 FileName = "Data",
