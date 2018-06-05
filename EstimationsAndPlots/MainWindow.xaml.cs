@@ -85,6 +85,8 @@ namespace EstimationsAndPlots
 
             Maxiter.Text = maxiter.ToString();
             Eps.Text = eps.ToString();
+
+            this.model.MouseDown += (s, e) => this.Plot_MouseDown(s, e);
         }
 
         private void FunctionChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -293,5 +295,7 @@ namespace EstimationsAndPlots
             }
             DrawFunctions();
         }
+
+
     }
 }
