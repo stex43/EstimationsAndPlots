@@ -86,13 +86,17 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.Actions\MainWindow.xaml.PlotActions.cs" />
-    <Compile Include="Math\Classes\LinearFunction.cs" />
-    <Compile Include="Math\Classes\NelderMeadMinimizer.cs" />
+    <Compile Include="MainWindow.xaml.Things\MainWindow.xaml.Optimize.cs" />
+    <Compile Include="MainWindow.xaml.Things\MainWindow.xaml.Plot.cs" />
+    <Compile Include="MainWindow.xaml.Things\MainWindow.xaml.Selectors.cs" />
+    <Compile Include="Math\Classes\FunctionPolynom.cs" />
+    <Compile Include="Math\Classes\MinimizeNelderMead.cs" />
+    <Compile Include="Math\Classes\MinimizeBFGS.cs" />
     <Compile Include="Math\Classes\SquaredResidualsSumDistance.cs" />
     <Compile Include="Math\Interfaces\IDistance.cs" />
     <Compile Include="Math\Interfaces\Function.cs" />
     <Compile Include="Math\Interfaces\IMinimize.cs" />
+    <Compile Include="Math\FunctionParameter.cs" />
     <Compile Include="Math\Point.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -101,7 +105,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindow.xaml.Actions\MainWindow.xaml.Menu.cs" />
+    <Compile Include="MainWindow.xaml.Things\MainWindow.xaml.Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

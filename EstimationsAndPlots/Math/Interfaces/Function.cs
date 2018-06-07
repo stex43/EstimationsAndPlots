@@ -9,9 +9,13 @@ namespace EstimationsAndPlots
         abstract public double FunctionValue(double x);
         abstract public double[] FunctionValue(double[] x);
 
+        abstract public double FunctionDerivativeParameter(double x, string parameterName);
+
         protected Dictionary<string, double> Parameters;
 
         public int NumberOfParameters => Parameters.Count;
+        
+        public abstract string TextFunctionRepresentation { get; }
 
         public List<string> GetParametersNames()
         {
@@ -64,5 +68,7 @@ namespace EstimationsAndPlots
                 throw new ArgumentException();
             }
         }
+
+        public abstract Function Copy();
     }
 }

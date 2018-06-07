@@ -8,8 +8,9 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace EstimationsAndPlots
 {
-    public class NelderMeadMinimizer : IMinimize
+    public class MinimizeNelderMead : IMinimize
     {
+
         class MinimizedFunction : IObjectiveFunction
         {
             private Function function;
@@ -56,7 +57,7 @@ namespace EstimationsAndPlots
             var p0 = Vector<double>.Build.Dense(function.GetParametersValues());
 
             var e = f.FindMinimum(new MinimizedFunction(function, distance), p0);
-
+            
             return e.MinimizingPoint.ToArray();
         }
     }

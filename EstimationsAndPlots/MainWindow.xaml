@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EstimationsAndPlots"
         xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="553" Width="932">
+        Title="MainWindow" Height="553" Width="932" ResizeMode="CanMinimize">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
@@ -21,81 +21,83 @@
                 <MenuItem Header="Выход" Click="Exit_Click"/>
             </MenuItem>
         </Menu>
-        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="10,25,350,152" MouseWheel="Plot_MouseWheel"/>
-        <TabControl Height="486" Margin="570,25,0,0" Width="335" 
+        <oxy:PlotView Name="Plot" Model="{Binding MyModel}" Margin="10,25,344,152" MouseWheel="Plot_MouseWheel"/>
+        <TabControl Margin="578,33,10,10" 
                     TabStripPlacement="Bottom">
             <TabItem Header="Данные">
-                <Grid Background="#FFE5E5E5">
-                    <DataGrid Name="PointsTable" HorizontalAlignment="Left" Height="458" VerticalAlignment="Top" Width="329" 
+                <Grid>
+                    <DataGrid Name="PointsTable" HorizontalAlignment="Left" Height="392" VerticalAlignment="Top" Width="328" 
                               AutoGenerateColumns="False" CanUserAddRows="True" FrozenColumnCount="2" ColumnWidth="167"
                               CanUserDeleteRows="True" GridLinesVisibility="All" CanUserResizeColumns="False"
-                              SelectedCellsChanged="PointsTable_SelectedCellsChanged">
+                              SelectedCellsChanged="PointsTable_SelectedCellsChanged" Background="White">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="X" Binding="{Binding X}" />
                             <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Button x:Name="ClearPoints" Content="Удалить точки" IsEnabled="True" HorizontalAlignment="Left" 
+                            Margin="10,409,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="ClearPoints_Click" />
                 </Grid>
 
             </TabItem>
             <TabItem Header="Оптимизация">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
                     <Button x:Name="Optimize" Content="Оптимизировать" IsEnabled="False" HorizontalAlignment="Left" 
-                            Margin="123,371,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="Optimize_Click" />
-                    <ComboBox x:Name="FunctionChoice" HorizontalAlignment="Left" Height="25" Margin="177,10,0,0" 
+                            Margin="200,409,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="Optimize_Click" />
+                    <Button x:Name="ClearOptimize" Content="Очистить" IsEnabled="False" HorizontalAlignment="Left" 
+                            Margin="10,409,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="ClearOptimize_Click" />
+                    <ComboBox x:Name="FunctionChoice" HorizontalAlignment="Left" Height="25" Margin="160,10,0,0" 
                               VerticalAlignment="Top" Width="150" SelectionChanged="FunctionChoice_SelectionChanged"/>
-                    <TextBlock HorizontalAlignment="Left" Height="45" Margin="22,5,0,0" TextWrapping="Wrap" 
+                    <TextBlock HorizontalAlignment="Left" Height="45" Margin="10,5,0,0" TextWrapping="Wrap" 
                                Text="Аппроксимирующая функция" TextAlignment="Center" VerticalAlignment="Top" Width="150"/>
-                    <TextBox x:Name="P1" Visibility="Hidden" HorizontalAlignment="Left" Height="18" Margin="96,84,0,0" 
-                             TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" 
-                             LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
-                    <TextBox x:Name="P2" Visibility="Hidden" HorizontalAlignment="Left" Height="18" Margin="96,107,0,0" 
-                             TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" 
-                             LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
-                    <TextBox x:Name="P3" Visibility="Hidden" HorizontalAlignment="Left" Height="18" Margin="96,130,0,0" 
-                             TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" 
-                             LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
-                    <TextBlock x:Name="T1" HorizontalAlignment="Left" Height="18" Margin="38,84,0,0" VerticalAlignment="Top" 
-                               Width="52" TextAlignment="Right"/>
-                    <TextBlock x:Name="T2" HorizontalAlignment="Left" Height="18" Margin="38,107,0,0" VerticalAlignment="Top"
-                               Width="52" TextAlignment="Right"/>
-                    <TextBlock x:Name="T3" HorizontalAlignment="Left" Height="18" Margin="38,130,0,0" VerticalAlignment="Top" 
-                               Width="52" TextAlignment="Right"/>
-                    <TextBlock x:Name="MaxiterName" HorizontalAlignment="Left" Margin="25,256,0,0" 
+                    <TextBlock x:Name="MaxiterName" HorizontalAlignment="Left" Margin="5,249,0,0" 
                                TextWrapping="Wrap" Text="Максимальное количество итераций" VerticalAlignment="Top" Height="34" 
                                Width="150" TextAlignment="Center"  LostFocus="OptimizationOptionsUpdate" 
                                KeyDown="OptimizationOptions_KeyDown"/>
-                    <TextBlock x:Name="EpsName" HorizontalAlignment="Left" Margin="24,301,0,0" 
+                    <TextBlock x:Name="EpsName" HorizontalAlignment="Left" Margin="4,283,0,0" 
                                TextWrapping="Wrap" Text="Погрешность" VerticalAlignment="Top" Height="34" Width="150" 
                                TextAlignment="Center"/>
-                    <TextBox x:Name="Maxiter" HorizontalAlignment="Left" Height="23" Margin="180,262,0,0" 
+                    <TextBox x:Name="MaxiterValue" HorizontalAlignment="Left" Height="23" Margin="160,255,0,0" 
                              TextWrapping="Wrap" VerticalAlignment="Top" Width="120"   
                              LostFocus="OptimizationOptionsUpdate" KeyDown="OptimizationOptions_KeyDown"
                              PreviewKeyDown="OptimizationOptions_KeyDown"/>
-                    <TextBox x:Name="Eps" HorizontalAlignment="Left" Height="23" Margin="180,301,0,0" 
+                    <TextBox x:Name="EpsValue" HorizontalAlignment="Left" Height="23" Margin="160,283,0,0" 
                              TextWrapping="Wrap" VerticalAlignment="Top" Width="120" 
                              LostFocus="OptimizationOptionsUpdate" KeyDown="OptimizationOptions_KeyDown" 
                              PreviewKeyDown="OptimizationOptions_KeyDown"/>
-                    <TextBox x:Name="P4" Visibility="Hidden" HorizontalAlignment="Left" Height="18" Margin="248,84,0,0" 
-                        TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" 
-                        LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
-                    <TextBox x:Name="P5" Visibility="Hidden" HorizontalAlignment="Left" Height="18" Margin="248,107,0,0" 
-                        TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" 
-                        LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
-                    <TextBox x:Name="P6" Visibility="Hidden" HorizontalAlignment="Left" Height="18" Margin="248,130,0,0" 
-                        TextWrapping="Wrap" VerticalAlignment="Top" Width="52" TextAlignment="Center" 
-                        LostFocus="P_UpdateParameter" KeyDown="P_KeyDown"/>
-                    <TextBlock x:Name="T4" HorizontalAlignment="Left" Height="18" Margin="191,84,0,0" VerticalAlignment="Top" 
-                        Width="52" TextAlignment="Right"/>
-                    <TextBlock x:Name="T5" HorizontalAlignment="Left" Height="18" Margin="191,107,0,0" VerticalAlignment="Top" 
-                        Width="52" TextAlignment="Right"/>
-                    <TextBlock x:Name="T6" HorizontalAlignment="Left" Height="18" Margin="191,130,0,0" VerticalAlignment="Top" 
-                        Width="52" TextAlignment="Right"/>
-                    <ComboBox Name="PolynomDegree" HorizontalAlignment="Left" Margin="38,50,0,0" VerticalAlignment="Top" 
-                              Width="52"/>
+                    <ComboBox Name="PolynomDegree" HorizontalAlignment="Left" Margin="160,40,0,0" VerticalAlignment="Top" 
+                              Width="52" SelectionChanged="PolynomDegree_SelectionChanged"  Visibility="Hidden">
+                        <ComboBoxItem Content="1"/>
+                        <ComboBoxItem Content="2"/>
+                        <ComboBoxItem Content="3"/>
+                        <ComboBoxItem Content="4"/>
+                        <ComboBoxItem Content="5"/>
+                    </ComboBox>
+                    <DataGrid Visibility="Hidden" Name="ParametersTable" HorizontalAlignment="Left" Height="150" Margin="10,94,0,0" 
+                              VerticalAlignment="Top" Width="309" AutoGenerateColumns="False" CanUserAddRows="False" 
+                              FrozenColumnCount="2" CanUserDeleteRows="False" GridLinesVisibility="All" 
+                              CanUserResizeColumns="False"
+                               SelectedCellsChanged="ParametersTable_SelectedCellsChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Параметр" Width="80" Binding="{Binding ParameterName}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Значение" Width="229" Binding="{Binding ParameterValue}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Name="DegreeLabel" Visibility="Hidden" Content="Степень полинома" HorizontalAlignment="Left" Height="25" Margin="29,37,0,0" VerticalAlignment="Top" Width="115"/>
+                    <Label Name="FunctionRepresentation" HorizontalAlignment="Left" Height="27" Margin="10,62,0,0" VerticalAlignment="Top" Width="310"/>
+                    <ComboBox x:Name="MinimizerChoice" HorizontalAlignment="Left" Height="25" Margin="160,311,0,0" 
+                        VerticalAlignment="Top" Width="150" SelectionChanged="MinimizerChoice_SelectionChanged"/>
+                    <ComboBox Name="MetricsChoice"  HorizontalAlignment="Left" Height="25" Margin="160,341,0,0" 
+                        VerticalAlignment="Top" Width="150" SelectionChanged="MetricsChoice_SelectionChanged"/>
+                    <TextBlock HorizontalAlignment="Left" Height="24" Margin="10,311,0,0" TextWrapping="Wrap" 
+                        Text="Метод минимизации" TextAlignment="Center" VerticalAlignment="Top" Width="150"/>
+                    <TextBlock HorizontalAlignment="Left" Height="24" Margin="10,342,0,0" TextWrapping="Wrap" 
+                        Text="Метрика" TextAlignment="Center" VerticalAlignment="Top" Width="150"/>
                 </Grid>
             </TabItem>
         </TabControl>
-        <CheckBox x:Name="AddingDotsMode" Content="Добавлять кнопки по щелчку" HorizontalAlignment="Left" Margin="152,5,0,0" VerticalAlignment="Top" Width="201"/>
+        <CheckBox x:Name="AddingDotsMode" Content="Добавлять точки нажатием ЛКМ" HorizontalAlignment="Left" Margin="152,5,0,0" VerticalAlignment="Top" Width="201"/>
+        <TextBox Name="LogBox" HorizontalAlignment="Left" Height="134" Margin="10,370,0,0" TextWrapping="Wrap" 
+                 VerticalAlignment="Top" Width="564" IsReadOnly="True"/>
     </Grid>
 </Window>

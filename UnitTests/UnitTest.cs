@@ -11,14 +11,14 @@ namespace UnitTests
         [TestMethod]
         public void TestNelderMead()
         {
-            LinearFunction function = new LinearFunction();
+            FunctionPolynom function = new FunctionPolynom();
 
             List<Point> data = new List<Point>();
             data.Add(new Point(0, 1));
             data.Add(new Point(1, 3));
             SquaredResidualsSumDistance distance = new SquaredResidualsSumDistance(data.ToArray());
 
-            var minimizer = new NelderMeadMinimizer();
+            var minimizer = new MinimizeNelderMead();
             var res = minimizer.Minimize(function, distance, 0.01, 100);
 
             function.SetParametersValues(res);

@@ -27,18 +27,27 @@ namespace EstimationsAndPlots
     {
         private PlotModel model = new PlotModel();
         private Function operatingFunction;
-        private bool isFunctionSet = false;
         private ObservableCollection<Point> operatingDataSet = new ObservableCollection<Point>();
-        private List<TextBox> parametersTextBoxes = new List<TextBox>();
-        private List<TextBlock> parametersTextBlocks = new List<TextBlock>();
+        private ObservableCollection<FunctionParameter> operatingFunctionParameters =
+            new ObservableCollection<FunctionParameter>();
         private int maxiter = 10000;
         private double eps = 1e-8;
-        private int optimizationStepsCount = 10;
         private List<double[]> parametersFunctions = new List<double[]>();
+        private IMinimize minimizer;
+        private IDistance metrics;
 
-        private Dictionary<string, Function> functions = new Dictionary<string, Function>()
+        private Dictionary<string, string> dictionaryFunction = new Dictionary<string, string>
         {
-            { "LinearFunction", new LinearFunction() },
+            { "Полином", "FunctionPolynom"}
+        };
+        private Dictionary<string, string> dictionaryMetrics = new Dictionary<string, string>
+        {
+            { "Сумма квадратов остатков", "SquaredResidualsSumDistance"}
+        };
+        private Dictionary<string, string> dictionaryMinimizer = new Dictionary<string, string>
+        {
+            { "Нелдера-Мида", "MinimizeNelderMead"},
+            { "BFGS", "MinimizeBFGS"}
         };
 
         public MainWindow()
@@ -46,17 +55,18 @@ namespace EstimationsAndPlots
             InitializeComponent();
 
             PointsTable.ItemsSource = operatingDataSet;
+            ParametersTable.ItemsSource = operatingFunctionParameters;
 
-            model = Plot.ActualModel;            
+            model = Plot.ActualModel;
+            
+            var typeNameList = dictionaryFunction.Keys;
+            FunctionChoice.ItemsSource = typeNameList;
 
-            Type[] typelist = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Namespace == "EstimationsAndPlots").ToArray();
-            List<string> functionNamesList = new List<string>();
-            foreach (Type type in typelist)
-            {
-                if (type.BaseType == Type.GetType("EstimationsAndPlots.Function"))
-                     functionNamesList.Add(type.Name);
-            }
-            FunctionChoice.ItemsSource = functionNamesList;
+            typeNameList = dictionaryMetrics.Keys;
+            MetricsChoice.ItemsSource = typeNameList;
+
+            typeNameList = dictionaryMinimizer.Keys;
+            MinimizerChoice.ItemsSource = typeNameList;
 
             var myController = new PlotController();
 
@@ -69,216 +79,13 @@ namespace EstimationsAndPlots
 
             myController.UnbindMouseWheel();
 
-            parametersTextBoxes.Add(P1);
-            parametersTextBoxes.Add(P2);
-            parametersTextBoxes.Add(P3);
-            parametersTextBoxes.Add(P4);
-            parametersTextBoxes.Add(P5);
-            parametersTextBoxes.Add(P6);
-
-            parametersTextBlocks.Add(T1);
-            parametersTextBlocks.Add(T2);
-            parametersTextBlocks.Add(T3);
-            parametersTextBlocks.Add(T4);
-            parametersTextBlocks.Add(T5);
-            parametersTextBlocks.Add(T6);
-
-            Maxiter.Text = maxiter.ToString();
-            Eps.Text = eps.ToString();
+            MaxiterValue.Text = maxiter.ToString();
+            EpsValue.Text = eps.ToString();
 
             this.model.MouseDown += (s, e) => this.Plot_MouseDown(s, e);
-        }
-
-        private void FunctionChoice_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach (var textBox in parametersTextBoxes)
-            {
-                textBox.Visibility = Visibility.Hidden;
-            }
-
-            foreach (var textBlock in parametersTextBlocks)
-            {
-                textBlock.Text = "";
-            }
-
-            operatingFunction = functions[(string)FunctionChoice.SelectedValue];
-            parametersFunctions.Add(operatingFunction.GetParametersValues());
-
-            DrawFunctions();
-
-            int i = 0;
-            foreach (var parameter in operatingFunction.GetParameters())
-            {            
-                parametersTextBoxes[i].Visibility = Visibility.Visible;
-                parametersTextBoxes[i].Text = parameter.Value.ToString();
-
-                parametersTextBlocks[i].Visibility = Visibility.Visible;
-                parametersTextBlocks[i].Text = parameter.Key;
-
-                i++;
-            }
-
-            isFunctionSet = true;
-
-            Optimize.IsEnabled = true;
-
-            OptimizationOptionsUpdate(Maxiter, new RoutedEventArgs());
-            OptimizationOptionsUpdate(Eps, new RoutedEventArgs());
-        }
-
-        private void P_UpdateParameter(object sender, RoutedEventArgs e)
-        {
-            var parameterIndex = parametersTextBoxes.IndexOf((TextBox)sender);
-            var parameterName = parametersTextBlocks[parameterIndex].Text;
-
-            if (parametersFunctions.Count > 1)
-            {
-                var res = MessageBox.Show("Это действие удалит полученные результаты. Продолжить?", "",
-                    MessageBoxButton.YesNo);
-                
-                if (res == MessageBoxResult.Yes)
-                {
-                    var parameterValue = double.Parse(parametersTextBoxes[parameterIndex].Text.Replace(',', '.'), CultureInfo.InvariantCulture);
-
-                    parametersFunctions.Clear();
-
-                    operatingFunction.SetParameterValue(parameterName, parameterValue);
-                    parametersFunctions.Add(operatingFunction.GetParametersValues());
-
-                    DrawFunctions();
-                }
-                else
-                {
-                    parametersTextBoxes[parameterIndex].Text = 
-                        parametersFunctions[parametersFunctions.Count - 1][parameterIndex].ToString(CultureInfo.InvariantCulture);
-                }
-            }
-        }
-
-        private void P_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                P_UpdateParameter(sender, new RoutedEventArgs());
-            }
-        }
-
-        private void Optimize_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (operatingDataSet.Count == 0)
-                {
-                    throw new NullReferenceException();
-                }
-
-                var optimizer = new NelderMeadMinimizer();
-                var distanceCount = new SquaredResidualsSumDistance(operatingDataSet.ToArray());
-
-                var distance = distanceCount.Distance(operatingFunction);
-
-                var distanceStep = (distance - eps) / optimizationStepsCount;
-
-                for (int i = 0; i < optimizationStepsCount; i++)
-                {
-                    distance -= distanceStep;
-                    var newParameters = optimizer.Minimize(operatingFunction, distanceCount, distance, maxiter);
-
-                    double s = 0;
-                    for (int j = 0; j < newParameters.Length; j++)
-                    {
-                        s += Math.Pow(newParameters[j] - parametersFunctions[parametersFunctions.Count - 1][j], 2);
-                    }
-                    s /= newParameters.Length;
-                    if (s > 0.01)
-                    {
-                        parametersFunctions.Add(newParameters);
-                    }
-                }
-
-                var resultParameters = parametersFunctions[parametersFunctions.Count - 1];
-                for (int i = 0; i < resultParameters.Length; i++)
-                {
-                    parametersTextBoxes[i].Text = resultParameters[i].ToString("G", CultureInfo.InvariantCulture);
-                }
-
-                DrawFunctions();
-            }
-            catch (NullReferenceException)
-            {
-                MessageBox.Show("Задайте данные", "", MessageBoxButton.OK);
-            }
-        }
-
-        private void OptimizationOptionsUpdate(object sender, RoutedEventArgs e)
-        {
-            if ((TextBox)sender == Maxiter)
-            {
-                if (!int.TryParse(Maxiter.Text, out int newMaxiter))
-                {
-                    MessageBox.Show("Введённое число слишком велико", "", MessageBoxButton.OK);
-                    Maxiter.Text = maxiter.ToString();
-                }
-                else if (newMaxiter == 0)
-                {
-                    MessageBox.Show("Значение не может быть нулём", "", MessageBoxButton.OK);
-                    Maxiter.Text = maxiter.ToString();
-                }
-                else
-                {
-                    maxiter = newMaxiter;
-                }
-            }
-            else if ((TextBox)sender == Eps)
-            {
-                var numberStyle = NumberStyles.Float | NumberStyles.AllowCurrencySymbol;
-                if (!double.TryParse(Eps.Text.Replace(',', '.'), numberStyle, CultureInfo.InvariantCulture, out double newEps))
-                {
-                    MessageBox.Show("Неверный формат числа", "", MessageBoxButton.OK);
-                    Eps.Text = eps.ToString();
-                }
-                else if (newEps == 0)
-                {
-                    MessageBox.Show("Значение не может быть нулём", "", MessageBoxButton.OK);
-                    Eps.Text = eps.ToString();
-                }
-                else if (newEps < 0)
-                {
-                    MessageBox.Show("Значение не может быть меньше нуля", "", MessageBoxButton.OK);
-                    Eps.Text = eps.ToString();
-                }
-                else
-                {
-                    eps = newEps;
-                }
-            }
-        }
-
-        private void OptimizationOptions_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                OptimizationOptionsUpdate(sender, new RoutedEventArgs());
-            }
-            else
-            {
-                var isKeyNumber = (e.Key >= Key.D0 && e.Key <= Key.D9) ||
-                    (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9);
-                var isKeyArrow = e.Key == Key.Left || e.Key == Key.Right;
-                var isKeyPlusMinus = e.Key == Key.OemPlus || e.Key == Key.OemMinus ||
-                    e.Key == Key.Subtract || e.Key == Key.Add;
-
-                if ((TextBox)sender == Maxiter && (!isKeyNumber || e.Key == Key.Space) && e.Key != Key.Back
-                    && !isKeyArrow)
-                {
-                    e.Handled = true;
-                }
-                else if ((TextBox)sender == Eps && !isKeyNumber && e.Key != Key.Back && e.Key != Key.OemComma
-                    && !isKeyPlusMinus && e.Key != Key.OemPeriod && !isKeyArrow)
-                {
-                    e.Handled = true;
-                }
-            }
+            model.KeyDown += (s, e) => Plot_KeyDown(s, e);
+            model.MouseMove += (s, e) => this.Plot_MouseMove(s, e);
+            model.MouseUp += (s, e) => this.Plot_MouseUp(s, e);
         }
 
         private void PointsTable_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
@@ -296,6 +103,25 @@ namespace EstimationsAndPlots
             DrawFunctions();
         }
 
+        private void ParametersTable_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            parametersFunctions.Clear();
+            for (int i = 0; i < operatingFunctionParameters.Count; i++)
+            {
+                var parameter = operatingFunctionParameters[i];
+                operatingFunction.SetParameterValue(parameter.ParameterName, parameter.ParameterValue);
+            }
 
+            parametersFunctions.Add(operatingFunction.GetParametersValues());
+
+            DrawFunctions();
+        }
+
+        private void ClearPoints_Click(object sender, RoutedEventArgs e)
+        {
+            operatingDataSet.Clear();
+
+            DrawFunctions();
+        }
     }
 }

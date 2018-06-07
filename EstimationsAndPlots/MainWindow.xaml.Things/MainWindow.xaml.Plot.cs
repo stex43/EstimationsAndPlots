@@ -20,7 +20,9 @@ using System.Windows.Input;
 namespace EstimationsAndPlots
 {
     public partial class MainWindow : Window
-    {        
+    {
+        private bool isMouseRightButtonDown = false;
+
         private void DrawFunctions()
         {
             model.Series.Clear();
@@ -78,7 +80,7 @@ namespace EstimationsAndPlots
 
         private void Plot_MouseDown(object sender, OxyMouseDownEventArgs e)
         {
-            if (this.AddingDotsMode.IsChecked == true)
+            if (e.ChangedButton == OxyMouseButton.Left && AddingDotsMode.IsChecked == true)
             {
                 var plot = model as PlotModel;
                 var axisList = plot.Axes.ToList();
@@ -96,6 +98,36 @@ namespace EstimationsAndPlots
 
                 this.operatingDataSet.Add(new Point(point.X, point.Y));
                 this.DrawFunctions();
+            }
+            if (e.ChangedButton == OxyMouseButton.Right)
+            {
+                isMouseRightButtonDown = true;
+            }
+        }
+
+        private void Plot_KeyDown(object sender, OxyKeyEventArgs e)
+        {
+            var key = e.Key;
+            if (key == OxyKey.Right || key == OxyKey.Left || key == OxyKey.Up || key == OxyKey.Down)
+            {
+                DrawFunctions();
+            }
+        }
+
+        private void Plot_MouseMove(object sender, OxyMouseEventArgs e)
+        {
+            if (isMouseRightButtonDown)
+            {
+                DrawFunctions();
+            }
+        }
+
+        private void Plot_MouseUp(object sender, OxyMouseEventArgs e)
+        {
+            if (isMouseRightButtonDown)
+            {
+                DrawFunctions();
+                isMouseRightButtonDown = false;
             }
         }
     }
